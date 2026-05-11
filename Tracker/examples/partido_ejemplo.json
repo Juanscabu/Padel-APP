@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "started_at": "2026-05-08T15:30:00-03:00",
+  "players": {
+    "J1": "Juan",
+    "J2": "Pedro",
+    "J3": "Luis",
+    "J4": "Mario"
+  },
+  "shots": [
+    {
+      "punto_id": 1,
+      "golpe_id": 1,
+      "jugador": "J3",
+      "tipo_golpe": "saque",
+      "direccion": "centro",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:30:05-03:00"
+    },
+    {
+      "punto_id": 1,
+      "golpe_id": 2,
+      "jugador": "J1",
+      "tipo_golpe": "drive",
+      "direccion": "cruzado",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:30:07-03:00"
+    },
+    {
+      "punto_id": 1,
+      "golpe_id": 3,
+      "jugador": "J3",
+      "tipo_golpe": "volea",
+      "direccion": "paralelo",
+      "resultado": "winner",
+      "equipo_ganador_punto": "B",
+      "timestamp": "2026-05-08T15:30:09-03:00"
+    },
+    {
+      "punto_id": 2,
+      "golpe_id": 1,
+      "jugador": "J4",
+      "tipo_golpe": "saque",
+      "direccion": "cruzado",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:30:35-03:00"
+    },
+    {
+      "punto_id": 2,
+      "golpe_id": 2,
+      "jugador": "J2",
+      "tipo_golpe": "drive",
+      "direccion": "paralelo",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:30:37-03:00"
+    },
+    {
+      "punto_id": 2,
+      "golpe_id": 3,
+      "jugador": "J4",
+      "tipo_golpe": "reves",
+      "direccion": "cruzado",
+      "resultado": "error",
+      "equipo_ganador_punto": "A",
+      "timestamp": "2026-05-08T15:30:39-03:00"
+    },
+    {
+      "punto_id": 3,
+      "golpe_id": 1,
+      "jugador": "J1",
+      "tipo_golpe": "saque",
+      "direccion": "cruzado",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:31:05-03:00"
+    },
+    {
+      "punto_id": 3,
+      "golpe_id": 2,
+      "jugador": "J3",
+      "tipo_golpe": "drive",
+      "direccion": "paralelo",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:31:07-03:00"
+    },
+    {
+      "punto_id": 3,
+      "golpe_id": 3,
+      "jugador": "J1",
+      "tipo_golpe": "bandeja",
+      "direccion": "cruzado",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:31:10-03:00"
+    },
+    {
+      "punto_id": 3,
+      "golpe_id": 4,
+      "jugador": "J4",
+      "tipo_golpe": "globo",
+      "direccion": "centro",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:31:12-03:00"
+    },
+    {
+      "punto_id": 3,
+      "golpe_id": 5,
+      "jugador": "J2",
+      "tipo_golpe": "smash",
+      "direccion": "centro",
+      "resultado": "winner",
+      "equipo_ganador_punto": "A",
+      "timestamp": "2026-05-08T15:31:14-03:00"
+    },
+    {
+      "punto_id": 4,
+      "golpe_id": 1,
+      "jugador": "J2",
+      "tipo_golpe": "saque",
+      "direccion": "centro",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:31:45-03:00"
+    },
+    {
+      "punto_id": 4,
+      "golpe_id": 2,
+      "jugador": "J4",
+      "tipo_golpe": "reves",
+      "direccion": "cruzado",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:31:47-03:00"
+    },
+    {
+      "punto_id": 4,
+      "golpe_id": 3,
+      "jugador": "J1",
+      "tipo_golpe": "volea",
+      "direccion": "cruzado",
+      "resultado": "error",
+      "equipo_ganador_punto": "B",
+      "timestamp": "2026-05-08T15:31:49-03:00"
+    },
+    {
+      "punto_id": 5,
+      "golpe_id": 1,
+      "jugador": "J3",
+      "tipo_golpe": "saque",
+      "direccion": "cruzado",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:32:15-03:00"
+    },
+    {
+      "punto_id": 5,
+      "golpe_id": 2,
+      "jugador": "J1",
+      "tipo_golpe": "drive",
+      "direccion": "paralelo",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:32:17-03:00"
+    },
+    {
+      "punto_id": 5,
+      "golpe_id": 3,
+      "jugador": "J3",
+      "tipo_golpe": "bandeja",
+      "direccion": "cruzado",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:32:19-03:00"
+    },
+    {
+      "punto_id": 5,
+      "golpe_id": 4,
+      "jugador": "J2",
+      "tipo_golpe": "globo",
+      "direccion": "centro",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:32:22-03:00"
+    },
+    {
+      "punto_id": 5,
+      "golpe_id": 5,
+      "jugador": "J4",
+      "tipo_golpe": "smash",
+      "direccion": "paralelo",
+      "resultado": "winner",
+      "equipo_ganador_punto": "B",
+      "timestamp": "2026-05-08T15:32:24-03:00"
+    },
+    {
+      "punto_id": 6,
+      "golpe_id": 1,
+      "jugador": "J4",
+      "tipo_golpe": "saque",
+      "direccion": "centro",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:32:55-03:00"
+    },
+    {
+      "punto_id": 6,
+      "golpe_id": 2,
+      "jugador": "J2",
+      "tipo_golpe": "drive",
+      "direccion": "cruzado",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:32:57-03:00"
+    },
+    {
+      "punto_id": 6,
+      "golpe_id": 3,
+      "jugador": "J3",
+      "tipo_golpe": "otro",
+      "direccion": "cruzado",
+      "resultado": "en_juego",
+      "equipo_ganador_punto": null,
+      "timestamp": "2026-05-08T15:32:59-03:00",
+      "etiqueta": "chiquita"
+    },
+    {
+      "punto_id": 6,
+      "golpe_id": 4,
+      "jugador": "J1",
+      "tipo_golpe": "volea",
+      "direccion": "cruzado",
+      "resultado": "winner",
+      "equipo_ganador_punto": "A",
+      "timestamp": "2026-05-08T15:33:01-03:00"
+    }
+  ]
+}

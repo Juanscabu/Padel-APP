@@ -1,0 +1,72 @@
+# ============================================================
+# Python — Tracker/
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# PyInstaller — artefactos de build (el .spec sí se versiona)
+Tracker/build/
+Tracker/dist/
+
+# Coverage / tests
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+
+# ============================================================
+# Sesiones del Tracker — datos privados de partidos jugados.
+# Los ejemplos públicos en Tracker/examples/ SÍ se versionan.
+# ============================================================
+Tracker/sessions/
+
+# ============================================================
+# Node / Vite — Analisis/
+# ============================================================
+node_modules/
+Analisis/dist/
+Analisis/.vite/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+
+# Variables de entorno locales
+.env
+.env.local
+.env.*.local
+
+# ============================================================
+# IDE / editores
+# ============================================================
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude Code — config local del entorno
+.claude/settings.local.json
+
+# ============================================================
+# Sistema operativo
+# ============================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
