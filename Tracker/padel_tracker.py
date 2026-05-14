@@ -13,6 +13,7 @@ import sys
 import tkinter as tk
 from datetime import datetime
 from tkinter import filedialog, messagebox, ttk
+from typing import Optional
 
 
 def app_base_dir() -> str:
@@ -167,7 +168,8 @@ class PadelTracker(tk.Tk):
         - sin golpes:           pedir saque del game 1                   (S_SERVER)
         - última 'falta':       segundo saque del mismo jugador          (S_DIRECTION)
         - última 'en_juego':    rally activo, esperar próximo jugador    (S_PLAYER)
-        - punto cerrado:        nuevo punto/game, pedir saque            (S_SERVER)
+        - punto cerrado:        auto-asigna por rotación si hay info,
+                                sino preguntá quién saca                 (S_SERVER)
         """
         self.current = {}
         shots = self.match.shots
@@ -186,7 +188,11 @@ class PadelTracker(tk.Tk):
             self.server = self._find_server_in_current_point()
             self.state = S_PLAYER
             return
-        # último golpe cerró un punto — preguntar quién saca el próximo
+        # último golpe cerró un punto. Intentar auto-asignar el sacador.
+        auto = self._compute_auto_server()
+        if auto is not None:
+            self._arm_server(auto)
+            return
         self.server = None
         self.state = S_SERVER
 
@@ -211,6 +217,9 @@ class PadelTracker(tk.Tk):
         self.golpe_id = 1
         self.match_score = MatchScore()
         self.server = None  # se setea en S_SERVER antes del primer saque
+        # Orden de saque del set actual. Vacío al inicio, [X] tras game 1,
+        # [X, Y, otherX, otherY] tras game 2. Se resetea al cerrar un set.
+        self.server_order: list[str] = []
         self.json_path = os.path.join(
             self.sessions_dir, session_filename(self.started_at_dt, "json")
         )
@@ -232,6 +241,7 @@ class PadelTracker(tk.Tk):
         self.golpe_id = 1
         self.match_score = MatchScore()
         self.server = None
+        self.server_order = []
         self._recompute_counters()
 
     # ------------------------------------------------------------------
@@ -434,8 +444,9 @@ class PadelTracker(tk.Tk):
 
         # ---- Help ----
         help_text = (
-            "Atajos: Ctrl+Z deshacer · Esc cancelar golpe en curso · "
-            "F2 editar jugadores · Ctrl+S guardar · Ctrl+Q salir y exportar CSV"
+            "Atajos: Backspace retroceder un paso · Ctrl+Z deshacer último golpe · "
+            "Esc cancelar golpe en curso · F2 editar jugadores · "
+            "Ctrl+S guardar · Ctrl+Q salir y exportar CSV"
         )
         tk.Label(
             self, text=help_text, fg=COLORS["muted"], bg=COLORS["bg"],
@@ -456,6 +467,7 @@ class PadelTracker(tk.Tk):
         self.bind("<Control-z>", self._on_undo)
         self.bind("<Control-Z>", self._on_undo)
         self.bind("<Escape>", self._on_escape)
+        self.bind("<BackSpace>", self._on_back_step)
         self.bind("<F2>", lambda e: self._edit_players())
         self.bind("<Control-s>", lambda e: self._save_and_flash())
         self.bind("<Control-q>", lambda e: self._quit_and_export())
@@ -490,11 +502,28 @@ class PadelTracker(tk.Tk):
 
         if self.state == S_SERVER:
             if char in PLAYERS:
-                self.server = PLAYERS[char]
-                self.current = {"jugador": self.server, "tipo_golpe": "saque"}
-                self.state = S_DIRECTION
+                nuevo = PLAYERS[char]
+                role = self._pending_server_role()
+                if role == "rival":
+                    first = self.server_order[0]
+                    if TEAM_OF_PLAYER[nuevo] == TEAM_OF_PLAYER[first]:
+                        self._flash(
+                            f"Game 2 lo saca el equipo rival a {self._player_display(first)}",
+                            "error",
+                        )
+                        self._refresh_ui()
+                        return
+                # Actualizar server_order del set
+                if role == "first":
+                    self.server_order = [nuevo]
+                elif role == "rival":
+                    self.server_order = self._complete_server_order(
+                        self.server_order[0], nuevo
+                    )
+                # role == "any": la rotación ya está fija, no toco server_order
+                self._arm_server(nuevo)
                 self._flash(
-                    f"Saca {self._player_display(self.server)} — pulsá dirección",
+                    f"Saca {self._player_display(nuevo)} — pulsá dirección",
                     "ok",
                 )
             else:
@@ -685,6 +714,79 @@ class PadelTracker(tk.Tk):
         self._flash("Golpe en curso cancelado", "ok")
         self._refresh_ui()
 
+    def _on_back_step(self, event):
+        """Retrocede UN paso dentro del armado del golpe en curso.
+
+        Para deshacer un golpe ya registrado, ver _on_undo (Ctrl+Z).
+        """
+        # En el entry de "otro" Backspace borra caracteres — no interceptar.
+        if self.state == S_OTRO_LABEL or self.focus_get() is self.otro_entry:
+            return None
+        if self.match_score.match_finished:
+            return "break"
+
+        s = self.state
+        current = self.current
+        extra = current.get("extra", {})
+        tipo = current.get("tipo_golpe")
+
+        if s in (S_PLAYER, S_SERVER):
+            # Si hay un saque pre-armado (rotación auto o falta), descartarlo
+            # y volver a preguntar/auto-asignar.
+            if current.get("jugador"):
+                self.current = {}
+                self.server = None
+                self.state = S_SERVER
+                self._flash("Saque descartado — elegí sacador", "ok")
+                self._refresh_ui()
+                return "break"
+            self._flash("Nada para retroceder", "info")
+            return "break"
+
+        if s == S_SHOT:
+            current.pop("jugador", None)
+            self.state = S_PLAYER
+            self._flash("Retrocedido a jugador", "ok")
+        elif s == S_SIDE:
+            current.pop("tipo_golpe", None)
+            self.state = S_SHOT
+            self._flash("Retrocedido a tipo de golpe", "ok")
+        elif s == S_WALL:
+            if tipo in SHOT_TYPES_WITH_SIDE:
+                extra.pop("lado", None)
+                self.state = S_SIDE
+                self._flash("Retrocedido a lado", "ok")
+            else:
+                current.pop("tipo_golpe", None)
+                self.state = S_SHOT
+                self._flash("Retrocedido a tipo de golpe", "ok")
+        elif s == S_DIRECTION:
+            if tipo == "saque":
+                # El saque va directo de S_SERVER a S_DIRECTION — descartar.
+                self.current = {}
+                self.server = None
+                self.state = S_SERVER
+                self._flash("Saque descartado — elegí sacador", "ok")
+            elif tipo in SHOT_TYPES_WITH_WALL:
+                extra.pop("con_pared", None)
+                self.state = S_WALL
+                self._flash("Retrocedido a con/sin pared", "ok")
+            elif tipo in SHOT_TYPES_WITH_SIDE:
+                extra.pop("lado", None)
+                self.state = S_SIDE
+                self._flash("Retrocedido a lado", "ok")
+            else:
+                current.pop("tipo_golpe", None)
+                self.state = S_SHOT
+                self._flash("Retrocedido a tipo de golpe", "ok")
+        elif s == S_RESULT:
+            current.pop("direccion", None)
+            self.state = S_DIRECTION
+            self._flash("Retrocedido a dirección", "ok")
+
+        self._refresh_ui()
+        return "break"
+
     def _on_undo(self, event):
         if not self.match.shots:
             self._flash("Nada para deshacer", "error")
@@ -756,14 +858,33 @@ class PadelTracker(tk.Tk):
             # segundo saque del MISMO jugador
             self.current = {"jugador": shot.jugador, "tipo_golpe": "saque"}
             self.state = S_DIRECTION
-        elif event and event.game_closed:
-            # game cerró: nuevo game requiere preguntar quién saca
+        elif event and event.set_closed:
+            # nuevo set: reset de rotación, preguntar manual.
+            self.server_order = []
             self.current = {}
             self.state = S_SERVER
             self.server = None
+        elif event and event.game_closed:
+            # game cerró (puede incluir entrada a TB). Intentar auto-asignar.
+            auto = self._compute_auto_server()
+            if auto is not None:
+                self._arm_server(auto)
+            else:
+                self.current = {}
+                self.state = S_SERVER
+                self.server = None
         elif equipo_ganador is not None:
-            # punto cerró pero game continúa: pre-armar saque del mismo server
-            if self.server:
+            # Punto cerró pero game NO. En TB el sacador rota cada 2 puntos,
+            # así que recalculamos. Fuera de TB se mantiene el mismo server.
+            if self.match_score.in_tiebreak:
+                auto = self._compute_auto_server()
+                if auto is not None:
+                    self._arm_server(auto)
+                else:
+                    self.current = {}
+                    self.state = S_SERVER
+                    self.server = None
+            elif self.server:
                 self.current = {"jugador": self.server, "tipo_golpe": "saque"}
                 self.state = S_DIRECTION
             else:
@@ -823,8 +944,9 @@ class PadelTracker(tk.Tk):
         return False
 
     def _recompute_counters(self):
-        """Reconstruye match_score, point_id y golpe_id desde shots."""
+        """Reconstruye match_score, point_id, golpe_id y server_order desde shots."""
         self.match_score = MatchScore.from_shots(self.match.shots)
+        self.server_order = self._reconstruct_server_order_from_shots()
         if not self.match.shots:
             self.point_id = 1
             self.golpe_id = 1
@@ -836,6 +958,87 @@ class PadelTracker(tk.Tk):
         else:
             self.point_id = last.punto_id
             self.golpe_id = last.golpe_id + 1
+
+    # ------------------------------------------------------------------
+    # Rotación de saque
+    # ------------------------------------------------------------------
+    def _other_of_team(self, player: str) -> str:
+        team = TEAM_OF_PLAYER.get(player)
+        for code, t in TEAM_OF_PLAYER.items():
+            if t == team and code != player:
+                return code
+        return player
+
+    def _complete_server_order(self, first: str, second: str) -> list[str]:
+        """Dado el sacador de los games 1 y 2 del set, devuelve la lista de
+        4 jugadores en orden de rotación: el segundo par son los compañeros
+        de cancha del primero y del segundo respectivamente."""
+        return [first, second, self._other_of_team(first), self._other_of_team(second)]
+
+    def _reconstruct_server_order_from_shots(self) -> list[str]:
+        """Re-deduce el orden de saque del set EN CURSO recorriendo shots.
+
+        Toma los primeros dos sacadores distintos (uno por equipo) del set
+        actual y completa con los compañeros. Si el set acaba de cerrar,
+        devuelve []."""
+        ms = MatchScore()
+        current_set_servers: list[str] = []
+        seen_first_saque_of_game = False
+        for s in self.match.shots:
+            if (
+                s.tipo_golpe == "saque"
+                and s.golpe_id == 1
+                and not seen_first_saque_of_game
+            ):
+                if len(current_set_servers) < 2 and s.jugador not in current_set_servers:
+                    current_set_servers.append(s.jugador)
+                seen_first_saque_of_game = True
+            if s.equipo_ganador_punto is not None:
+                event = ms.add_point(s.equipo_ganador_punto)
+                if event.game_closed:
+                    seen_first_saque_of_game = False
+                if event.set_closed:
+                    current_set_servers = []
+        if len(current_set_servers) == 2:
+            return self._complete_server_order(
+                current_set_servers[0], current_set_servers[1]
+            )
+        return current_set_servers
+
+    def _compute_auto_server(self) -> Optional[str]:
+        """Devuelve el sacador del próximo punto si la rotación lo permite,
+        o None si todavía no hay info suficiente y hay que preguntar manual.
+
+        - Set normal: requiere server_order lleno (4 elementos). El sacador
+          del game N (0-indexed = total games del set actual) es
+          server_order[N % 4].
+        - Tiebreak: el primer punto lo saca server_order[0]; después cada
+          jugador saca 2 puntos consecutivos siguiendo server_order.
+        """
+        if len(self.server_order) < 4:
+            return None
+        ms = self.match_score
+        if ms.in_tiebreak:
+            tb_index = ms.tb_a + ms.tb_b
+            if tb_index == 0:
+                return self.server_order[0]
+            return self.server_order[((tb_index + 1) // 2) % 4]
+        n_games = ms.games_a + ms.games_b
+        return self.server_order[n_games % 4]
+
+    def _arm_server(self, jugador: str):
+        """Pre-arma el flujo para que jugador saque el próximo punto."""
+        self.server = jugador
+        self.current = {"jugador": jugador, "tipo_golpe": "saque"}
+        self.state = S_DIRECTION
+
+    def _pending_server_role(self) -> str:
+        """'first' (game 1), 'rival' (game 2: debe ser equipo rival), 'any'."""
+        if len(self.server_order) == 0:
+            return "first"
+        if len(self.server_order) == 1:
+            return "rival"
+        return "any"
 
     # ------------------------------------------------------------------
     # Refresco visual
@@ -917,7 +1120,25 @@ class PadelTracker(tk.Tk):
         agregar un golpe/dirección ahí actualiza la UI sin tocar este archivo.
         Para el paso de jugador usa los nombres reales del partido."""
         title = STATE_TITLES.get(state, "")
-        if state in (S_PLAYER, S_SERVER):
+        if state == S_SERVER:
+            role = self._pending_server_role()
+            allowed_codes = None
+            if role == "rival":
+                first = self.server_order[0]
+                rival_team = "B" if TEAM_OF_PLAYER[first] == "A" else "A"
+                allowed_codes = {
+                    code for code, t in TEAM_OF_PLAYER.items() if t == rival_team
+                }
+                title = f"¿QUIÉN SACA? (Game 2 — equipo rival a {self._player_display(first)})"
+            parts = []
+            for key, code in PLAYERS.items():
+                if allowed_codes is not None and code not in allowed_codes:
+                    continue
+                name = self.match.players.get(code, code)
+                shown = name if name and name != code else code
+                parts.append(f"{key} = {shown}")
+            return title, "  ·  ".join(parts)
+        if state == S_PLAYER:
             parts = []
             for key, code in PLAYERS.items():
                 name = self.match.players.get(code, code)
@@ -929,7 +1150,7 @@ class PadelTracker(tk.Tk):
         if state == S_SIDE:
             return title, _format_keys(SIDES, SIDE_LABELS)
         if state == S_WALL:
-            return title, "S = Con pared  ·  N = Sin pared"
+            return title, "C = Con pared  ·  S = Sin pared"
         if state == S_DIRECTION:
             return title, _format_keys(DIRECTIONS, DIRECTION_LABELS)
         if state == S_RESULT:

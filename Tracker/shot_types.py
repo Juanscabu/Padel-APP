@@ -83,11 +83,12 @@ SHOT_TYPES_WITH_WALL = {
     "drive",
     "reves",
     "globo",
+    "chiquita",
 }
 
 WALL_OPTIONS = {
-    "s": True,
-    "n": False,
+    "c": True,
+    "s": False,
 }
 
 WALL_LABELS = {
@@ -98,7 +99,7 @@ WALL_LABELS = {
 DIRECTIONS = {
     "c": "cruzado",
     "p": "paralelo",
-    "m": "centro",
+    "m": "medio",
     "d": "cuerpo drive",
     "r": "cuerpo reves",
     "j": "reja"
@@ -107,7 +108,9 @@ DIRECTIONS = {
 DIRECTION_LABELS = {
     "cruzado": "Cruzado",
     "paralelo": "Paralelo",
-    "centro": "Centro",
+    "medio": "Medio",
+    # Partidos viejos guardaron "centro"; ahora se muestran como "Medio".
+    "centro": "Medio",
     "cuerpo drive": "Cuerpo Drive",
     "cuerpo reves": "Cuerpo Reves",
     "reja": "Reja"
@@ -115,7 +118,8 @@ DIRECTION_LABELS = {
 
 RESULTS = {
     "w": "winner",
-    "e": "error",
+    "e": "error_forzado",
+    "n": "error_no_forzado",
     "j": "en_juego",
 }
 
@@ -133,7 +137,11 @@ SAQUE_RESULTS = {
 
 RESULT_LABELS = {
     "winner": "Winner",
+    # "error" se mantiene para partidos viejos guardados con el resultado
+    # genérico; los partidos nuevos usan error_forzado / error_no_forzado.
     "error": "Error",
+    "error_forzado": "Error forzado",
+    "error_no_forzado": "Error no forzado",
     "en_juego": "En juego",
     "falta": "Falta",
     "doble_falta": "Doble falta",

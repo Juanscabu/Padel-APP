@@ -1,6 +1,6 @@
 // 📊 Análisis de puntos: distribución, cierres, duración.
 
-import { Match, PlayerId, Shot, Team } from "../parser/types";
+import { Match, PlayerId, Shot, Team, isErrorResult } from "../parser/types";
 
 export interface PuntoCerrado {
   puntoId: number;
@@ -49,7 +49,7 @@ export function computePoints(match: Match): PointsStats {
     if (p.resultadoCierre === "winner") {
       totalWinners += 1;
       winnersPorJugador[p.cerradoPor] += 1;
-    } else if (p.resultadoCierre === "error") {
+    } else if (isErrorResult(p.resultadoCierre)) {
       totalErrores += 1;
       erroresPorJugador[p.cerradoPor] += 1;
     }

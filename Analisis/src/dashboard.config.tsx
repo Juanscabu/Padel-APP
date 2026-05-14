@@ -9,7 +9,6 @@ import { Match } from "./parser/types";
 import { OverviewSection } from "./sections/OverviewSection";
 import { PlayersSection } from "./sections/PlayersSection";
 import { PointsSection } from "./sections/PointsSection";
-import { TimelineSection } from "./sections/TimelineSection";
 import { DirectionsSection } from "./sections/DirectionsSection";
 
 export interface DashboardSection {
@@ -22,6 +21,5 @@ export const DASHBOARD_SECTIONS: DashboardSection[] = [
   { id: "overview", navLabel: "Resumen", component: OverviewSection },
   { id: "players", navLabel: "Por jugador", component: PlayersSection },
   { id: "points", navLabel: "Puntos", component: PointsSection },
-  { id: "timeline", navLabel: "Momentum", component: TimelineSection },
   { id: "directions", navLabel: "Direcciones", component: DirectionsSection },
 ];

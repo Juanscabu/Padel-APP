@@ -78,6 +78,23 @@ function buildPlayers(raw?: Record<string, string>): Record<PlayerId, PlayerInfo
   return result;
 }
 
+// Partidos viejos guardaban un único "error" sin distinguir forzado / no
+// forzado. Los tratamos como "error_no_forzado" para que las métricas
+// nuevas no inflen artificialmente la columna de "forzados".
+function normalizeResultado(raw: unknown): string {
+  if (typeof raw !== "string") return "en_juego";
+  if (raw === "error") return "error_no_forzado";
+  return raw;
+}
+
+// "centro" se renombró a "medio". Mapear partidos viejos para que las
+// métricas agrupen ambos como una sola categoría.
+function normalizeDireccion(raw: unknown): string {
+  if (typeof raw !== "string") return "desconocida";
+  if (raw === "centro") return "medio";
+  return raw;
+}
+
 function parseShot(raw: RawShot, idx: number): Shot | null {
   const jugador = raw.jugador as PlayerId | undefined;
   // Defensivo: si no hay jugador o no es uno conocido, descarto el shot
@@ -97,8 +114,8 @@ function parseShot(raw: RawShot, idx: number): Shot | null {
     jugador,
     equipo: TEAM_OF_PLAYER[jugador],
     tipoGolpe: typeof raw.tipo_golpe === "string" ? raw.tipo_golpe : "otro",
-    direccion: typeof raw.direccion === "string" ? raw.direccion : "desconocida",
-    resultado: typeof raw.resultado === "string" ? raw.resultado : "en_juego",
+    direccion: normalizeDireccion(raw.direccion),
+    resultado: normalizeResultado(raw.resultado),
     equipoGanadorPunto:
       raw.equipo_ganador_punto === "A" || raw.equipo_ganador_punto === "B"
         ? raw.equipo_ganador_punto

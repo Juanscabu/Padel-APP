@@ -80,7 +80,7 @@ El flujo es una máquina de estados. La UI siempre indica qué se espera:
 | 2    | X     | Otro (abre un campo opcional de etiqueta — Enter para saltar) |
 | 3*   | D R   | Lado del golpe: Drive · Revés (solo para tipos con lado)    |
 | 4*   | S N   | ¿Con pared? Sí · No (solo para Drive, Revés, Globo)         |
-| 5    | C P M D R J | Cruzado · Paralelo · Centro · Cuerpo Drive · Cuerpo Revés · Reja |
+| 5    | C P M D R J | Cruzado · Paralelo · Medio · Cuerpo Drive · Cuerpo Revés · Reja |
 | 6    | W E J | Winner · Error · En juego (sigue el peloteo)                |
 
 Los pasos marcados con `*` solo aparecen para ciertos tipos de golpe.
@@ -123,7 +123,7 @@ Estructura de cada golpe:
   "golpe_id": 5,
   "jugador": "J2",
   "tipo_golpe": "smash",
-  "direccion": "centro",
+  "direccion": "medio",
   "resultado": "winner",
   "equipo_ganador_punto": "A",
   "timestamp": "2026-05-08T15:42:11-03:00"

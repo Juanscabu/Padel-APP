@@ -22,9 +22,14 @@ export interface HBarItem {
 interface Props {
   data: HBarItem[];
   height?: number;
+  valueLabel?: string; // texto que aparece en el tooltip junto al valor
 }
 
-export function HorizontalBarChart({ data, height = 260 }: Props) {
+export function HorizontalBarChart({
+  data,
+  height = 260,
+  valueLabel = "Cantidad",
+}: Props) {
   if (data.length === 0) {
     return <div className="empty">Sin datos</div>;
   }
@@ -35,24 +40,28 @@ export function HorizontalBarChart({ data, height = 260 }: Props) {
         layout="vertical"
         margin={{ top: 8, right: 24, left: 8, bottom: 8 }}
       >
-        <CartesianGrid stroke="#3c3c3c" strokeDasharray="3 3" />
-        <XAxis type="number" tick={AXIS_STYLE} stroke="#3c3c3c" allowDecimals={false} />
+        <CartesianGrid stroke="#2a2f3e" strokeDasharray="3 3" />
+        <XAxis type="number" tick={AXIS_STYLE} stroke="#2a2f3e" allowDecimals={false} />
         <YAxis
           type="category"
           dataKey="label"
           tick={AXIS_STYLE}
-          stroke="#3c3c3c"
+          stroke="#2a2f3e"
           width={120}
         />
         <Tooltip
           contentStyle={{
-            background: "#252526",
-            border: "1px solid #3c3c3c",
-            color: "#e0e0e0",
+            background: "#1c2030",
+            border: "1px solid #4ec9b0",
+            borderRadius: 8,
+            color: "#e4e6eb",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
           }}
-          cursor={{ fill: "rgba(255,255,255,0.04)" }}
+          itemStyle={{ color: "#e4e6eb" }}
+          labelStyle={{ color: "#8b8f9d", marginBottom: 4 }}
+          cursor={{ fill: "rgba(78, 201, 176, 0.08)" }}
         />
-        <Bar dataKey="value" isAnimationActive>
+        <Bar dataKey="value" name={valueLabel} isAnimationActive>
           {data.map((d) => (
             <Cell key={d.label} fill={d.color} />
           ))}

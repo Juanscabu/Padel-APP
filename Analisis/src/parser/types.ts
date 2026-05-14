@@ -11,7 +11,17 @@ export type Team = "A" | "B";
 // caen al string crudo si no lo conocen.
 export type ShotType = string;
 export type Direction = string;
-export type Result = "winner" | "error" | "en_juego" | "falta" | "doble_falta" | string;
+export type Result =
+  | "winner"
+  | "error_forzado"
+  | "error_no_forzado"
+  // "error" sigue existiendo solo como valor legacy de partidos viejos.
+  // El parser lo normaliza a "error_no_forzado" antes de llegar al resto.
+  | "error"
+  | "en_juego"
+  | "falta"
+  | "doble_falta"
+  | string;
 
 export interface Shot {
   puntoId: number;
@@ -66,4 +76,14 @@ export interface RawMatch {
   players?: Record<string, string>;
   shots?: RawShot[];
   [key: string]: unknown;
+}
+
+// Predicado canónico de "error" — cubre forzado, no forzado y el legacy
+// "error" por defensiva (el parser ya lo normaliza a no_forzado).
+export function isErrorResult(r: string): boolean {
+  return r === "error_forzado" || r === "error_no_forzado" || r === "error";
+}
+
+export function isForzado(r: string): boolean {
+  return r === "error_forzado";
 }

@@ -23,7 +23,10 @@ const SHOT_TYPE_LABELS: Record<string, string> = {
 const DIRECTION_LABELS: Record<string, string> = {
   cruzado: "Cruzado",
   paralelo: "Paralelo",
-  centro: "Centro",
+  medio: "Medio",
+  // Partidos viejos guardaron "centro"; el parser los normaliza, este
+  // fallback queda por si algún shot legacy no pasa por parseMatch.
+  centro: "Medio",
   "cuerpo drive": "Cuerpo Drive",
   "cuerpo reves": "Cuerpo Revés",
   reja: "Reja",
@@ -33,6 +36,8 @@ const DIRECTION_LABELS: Record<string, string> = {
 const RESULT_LABELS: Record<string, string> = {
   winner: "Winner",
   error: "Error",
+  error_forzado: "Error forzado",
+  error_no_forzado: "Error no forzado",
   en_juego: "En juego",
   falta: "Falta",
   doble_falta: "Doble falta",
@@ -48,6 +53,15 @@ export function directionLabel(id: string): string {
 
 export function resultLabel(id: string): string {
   return RESULT_LABELS[id] ?? capitalize(id);
+}
+
+const SIDE_LABELS: Record<string, string> = {
+  drive: "Drive",
+  reves: "Revés",
+};
+
+export function sideLabel(id: string): string {
+  return SIDE_LABELS[id] ?? capitalize(id);
 }
 
 function capitalize(s: string): string {

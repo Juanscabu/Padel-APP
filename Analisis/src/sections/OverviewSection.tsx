@@ -17,16 +17,6 @@ export function OverviewSection({ match }: Props) {
       <div className="kpi-grid">
         <KpiCard icon="🎾" label="Puntos jugados" value={stats.totalPuntos} />
         <KpiCard icon="🥎" label="Golpes registrados" value={stats.totalGolpes} />
-        <KpiCard
-          icon="⚔️"
-          label="Puntos por equipo"
-          versus={{
-            a: stats.puntosEquipoA,
-            b: stats.puntosEquipoB,
-            labelA: "Eq. A",
-            labelB: "Eq. B",
-          }}
-        />
         <KpiCard icon="🏆" label="Total winners" value={stats.totalWinners} accent="#73c990" />
         <KpiCard icon="💥" label="Total errores" value={stats.totalErrores} accent="#f48771" />
         {stats.jugadorMasGolpes && (
@@ -54,6 +44,15 @@ export function OverviewSection({ match }: Props) {
             value={stats.jugadorMasErrores.nombre}
             sublabel={`${stats.jugadorMasErrores.count} errores`}
             accent={PLAYER_COLORS[stats.jugadorMasErrores.id]}
+          />
+        )}
+        {stats.jugadorMasGeneraErrores && stats.jugadorMasGeneraErrores.count > 0 && (
+          <KpiCard
+            icon="🔥"
+            label="Más errores generados"
+            value={stats.jugadorMasGeneraErrores.nombre}
+            sublabel={`${stats.jugadorMasGeneraErrores.count} generados`}
+            accent={PLAYER_COLORS[stats.jugadorMasGeneraErrores.id]}
           />
         )}
       </div>

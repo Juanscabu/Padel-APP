@@ -41,17 +41,21 @@ export function StackedBarChart({
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
-        <CartesianGrid stroke="#3c3c3c" strokeDasharray="3 3" />
-        <XAxis dataKey={xKey} tick={AXIS_STYLE} stroke="#3c3c3c" />
-        <YAxis tick={AXIS_STYLE} stroke="#3c3c3c" allowDecimals={false} />
+        <CartesianGrid stroke="#2a2f3e" strokeDasharray="3 3" />
+        <XAxis dataKey={xKey} tick={AXIS_STYLE} stroke="#2a2f3e" />
+        <YAxis tick={AXIS_STYLE} stroke="#2a2f3e" allowDecimals={false} />
         <Tooltip
           contentStyle={{
-            background: "#252526",
-            border: "1px solid #3c3c3c",
-            color: "#e0e0e0",
+            background: "#1c2030",
+            border: "1px solid #4ec9b0",
+            borderRadius: 8,
+            color: "#e4e6eb",
             fontFamily: "Consolas, monospace",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
           }}
-          cursor={{ fill: "rgba(255,255,255,0.04)" }}
+          itemStyle={{ color: "#e4e6eb" }}
+          labelStyle={{ color: "#8b8f9d", marginBottom: 4 }}
+          cursor={{ fill: "rgba(78, 201, 176, 0.08)" }}
         />
         <Legend wrapperStyle={{ color: "#e0e0e0", fontSize: 12 }} />
         {series.map((s) => (

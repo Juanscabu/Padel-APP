@@ -43,11 +43,15 @@ export function DonutChart({ data, height = 260 }: Props) {
         </Pie>
         <Tooltip
           contentStyle={{
-            background: "#252526",
-            border: "1px solid #3c3c3c",
-            color: "#e0e0e0",
+            background: "#1c2030",
+            border: "1px solid #4ec9b0",
+            borderRadius: 8,
+            color: "#e4e6eb",
             fontFamily: "Consolas, monospace",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
           }}
+          itemStyle={{ color: "#e4e6eb" }}
+          labelStyle={{ color: "#8b8f9d" }}
           formatter={(value: number, name: string) => [value, name]}
         />
         <Legend

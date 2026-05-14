@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { FileLoader } from "./components/FileLoader";
+import { TeamsBanner } from "./components/TeamsBanner";
 import { DASHBOARD_SECTIONS } from "./dashboard.config";
 import { parseMatch, ParseError } from "./parser/parseMatch";
 import { Match } from "./parser/types";
@@ -94,6 +95,7 @@ export function App() {
 
       {match && (
         <>
+          <TeamsBanner match={match} />
           <nav className="nav">
             {sections.map((s) => (
               <a key={s.id} href={`#${s.id}`} className="nav__link">

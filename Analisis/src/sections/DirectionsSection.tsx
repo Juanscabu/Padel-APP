@@ -30,7 +30,7 @@ export function DirectionsSection({ match }: Props) {
       <div className="chart-grid">
         <div className="chart-card chart-card--wide">
           <h3 className="chart-card__title">Distribución global</h3>
-          <HorizontalBarChart data={globalData} />
+          <HorizontalBarChart data={globalData} valueLabel="Golpes" />
         </div>
       </div>
 
