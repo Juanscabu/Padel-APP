@@ -65,7 +65,7 @@ function PlayerView({ stats }: { stats: PlayerStats }) {
   // por tipo, omitiendo el bucket "saque".
   const direccionesSinSaque: Record<string, number> = {};
   for (const b of stats.breakdownPorTipo) {
-    if (b.tipo === "saque") continue;
+    if (b.tipoGolpe === "saque") continue;
     for (const [d, n] of Object.entries(b.porDireccion)) {
       direccionesSinSaque[d] = (direccionesSinSaque[d] ?? 0) + n;
     }
@@ -79,9 +79,9 @@ function PlayerView({ stats }: { stats: PlayerStats }) {
     .sort((a, b) => b.value - a.value);
 
   const breakdownData = stats.breakdownPorTipo
-    .filter((b) => b.tipo !== "saque")
+    .filter((b) => b.tipoGolpe !== "saque")
     .map((b) => ({
-      tipo: shotTypeLabel(b.tipo),
+      tipoGolpe: shotTypeLabel(b.tipoGolpe),
       winners: b.winners,
       errores: b.errores,
       enJuego: b.enJuego,
@@ -124,7 +124,7 @@ function PlayerView({ stats }: { stats: PlayerStats }) {
             Eficiencia ofensiva ({stats.winnersOfensivos + stats.erroresGeneradosOfensivos}/
             {stats.winnersOfensivos +
               stats.erroresGeneradosOfensivos +
-              stats.erroresNoForzadosOfensivosCometidos})
+              stats.erroresNoForzadosOfensivos})
           </span>
         </div>
         <div className="total-pill total-pill--neutral">
@@ -142,9 +142,9 @@ function PlayerView({ stats }: { stats: PlayerStats }) {
           </span>
         </div>
         <div className="total-pill total-pill--errors">
-          <span className="total-pill__value">{stats.pctRestoError}%</span>
+          <span className="total-pill__value">{stats.pctRestoErrores}%</span>
           <span className="total-pill__label">
-            Restos error ({stats.restosError}/{stats.totalRestos})
+            Restos error ({stats.restosErrores}/{stats.totalRestos})
           </span>
         </div>
       </div>
@@ -162,7 +162,7 @@ function PlayerView({ stats }: { stats: PlayerStats }) {
           <h3 className="chart-card__title">Resultado por tipo de golpe</h3>
           <StackedBarChart
             data={breakdownData}
-            xKey="tipo"
+            xKey="tipoGolpe"
             series={[
               { key: "winners", label: "Winners", color: RESULT_COLORS.winner },
               { key: "errores", label: "Errores", color: RESULT_COLORS.error },
@@ -210,12 +210,12 @@ function BreakdownTable({
       </thead>
       <tbody>
         {rows.map((b) => {
-          const open = expanded.has(b.tipo);
+          const open = expanded.has(b.tipoGolpe);
           const dirEntries = Object.entries(b.porDireccion).filter(([, n]) => n > 0);
           return (
-            <Fragment key={b.tipo}>
+            <Fragment key={b.tipoGolpe}>
               <tr
-                onClick={() => toggle(b.tipo)}
+                onClick={() => toggle(b.tipoGolpe)}
                 className="breakdown-row"
                 style={{ cursor: "pointer" }}
               >
@@ -223,13 +223,13 @@ function BreakdownTable({
                   <span style={{ display: "inline-block", width: "1em", color: "#888" }}>
                     {open ? "▾" : "▸"}
                   </span>
-                  {shotTypeLabel(b.tipo)}
+                  {shotTypeLabel(b.tipoGolpe)}
                 </td>
                 <td>{b.total}</td>
                 <td className="cell--ok">{b.winners || ""}</td>
                 <td className="cell--ok">{b.erroresGenerados || ""}</td>
-                <td className="cell--err">{b.erroresForzadosCometidos || ""}</td>
-                <td className="cell--err">{b.erroresNoForzadosCometidos || ""}</td>
+                <td className="cell--err">{b.erroresForzados || ""}</td>
+                <td className="cell--err">{b.erroresNoForzados || ""}</td>
               </tr>
               {open && (
                 <tr className="breakdown-row__detail">

@@ -30,6 +30,9 @@ const DIRECTION_LABELS: Record<string, string> = {
   "cuerpo drive": "Cuerpo Drive",
   "cuerpo reves": "Cuerpo Revés",
   reja: "Reja",
+  // Direcciones exclusivas del saque.
+  cuerpo: "Cuerpo",
+  pared: "Pared",
   desconocida: "Desconocida",
 };
 

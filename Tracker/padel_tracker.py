@@ -34,6 +34,8 @@ from shot_types import (
     PLAYERS,
     RESULT_LABELS,
     RESULTS,
+    SAQUE_DIRECTION_LABELS,
+    SAQUE_DIRECTIONS,
     SAQUE_RESULT_LABELS,
     SAQUE_RESULTS,
     SHOT_TYPE_LABELS,
@@ -568,14 +570,17 @@ class PadelTracker(tk.Tk):
             else:
                 self._flash(f"Tecla '{char}' inválida — esperando S/N", "error")
         elif self.state == S_DIRECTION:
-            if char in DIRECTIONS:
-                self.current["direccion"] = DIRECTIONS[char]
+            is_saque = self.current.get("tipo_golpe") == "saque"
+            directions_dict = SAQUE_DIRECTIONS if is_saque else DIRECTIONS
+            if char in directions_dict:
+                self.current["direccion"] = directions_dict[char]
                 self.state = S_RESULT
                 self._flash(
                     f"Dirección: {DIRECTION_LABELS[self.current['direccion']]}", "ok"
                 )
             else:
-                self._flash(f"Tecla '{char}' inválida — esperando C/P/T", "error")
+                expected = "/".join(k.upper() for k in directions_dict)
+                self._flash(f"Tecla '{char}' inválida — esperando {expected}", "error")
         elif self.state == S_RESULT:
             is_saque = self.current.get("tipo_golpe") == "saque"
             results_dict = SAQUE_RESULTS if is_saque else RESULTS
@@ -1152,6 +1157,8 @@ class PadelTracker(tk.Tk):
         if state == S_WALL:
             return title, "C = Con pared  ·  S = Sin pared"
         if state == S_DIRECTION:
+            if self.current.get("tipo_golpe") == "saque":
+                return title, _format_keys(SAQUE_DIRECTIONS, SAQUE_DIRECTION_LABELS)
             return title, _format_keys(DIRECTIONS, DIRECTION_LABELS)
         if state == S_RESULT:
             if self.current.get("tipo_golpe") == "saque":

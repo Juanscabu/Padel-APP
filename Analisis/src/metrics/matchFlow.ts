@@ -4,7 +4,8 @@
 // guardado en cada primer saque) entre puntos consecutivos: si el game
 // o set cambia, el punto anterior cerró un game.
 
-import { Match, Shot } from "../parser/types";
+import { Match } from "../parser/types";
+import { shotsGroupedByPoint } from "./_shared";
 
 export interface FlowPoint {
   game: number;
@@ -59,18 +60,10 @@ function lastPointClosedGame(curr: PuntoData): boolean {
 }
 
 function collectPuntos(match: Match): PuntoData[] {
-  const porPunto: Record<number, Shot[]> = {};
-  for (const s of match.shots) {
-    (porPunto[s.puntoId] ??= []).push(s);
-  }
-  const ids = Object.keys(porPunto)
-    .map(Number)
-    .sort((a, b) => a - b);
   const out: PuntoData[] = [];
-  for (const pid of ids) {
-    const ordered = [...porPunto[pid]].sort((a, b) => a.golpeId - b.golpeId);
-    const first = ordered[0];
-    const cierre = ordered[ordered.length - 1];
+  for (const { shots } of shotsGroupedByPoint(match.shots)) {
+    const first = shots[0];
+    const cierre = shots[shots.length - 1];
     if (cierre.equipoGanadorPunto !== "A" && cierre.equipoGanadorPunto !== "B") continue;
     out.push({
       snapshot: {

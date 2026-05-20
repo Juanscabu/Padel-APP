@@ -10,6 +10,7 @@
 // fueran games regulares, lo cual aproxima razonablemente.
 
 import { Match, Shot, Team } from "../parser/types";
+import { shotsGroupedByPoint } from "./_shared";
 
 export interface PressurePointsStats {
   bpChances: Record<Team, number>; // puntos jugados donde el restador podía quebrar
@@ -102,13 +103,8 @@ export function computePressurePoints(match: Match): PressurePointsStats {
 }
 
 function closedPointsInOrder(shots: Shot[]): PointSummary[] {
-  const grouped: Record<number, Shot[]> = {};
-  for (const s of shots) {
-    (grouped[s.puntoId] ??= []).push(s);
-  }
   const result: PointSummary[] = [];
-  for (const [puntoIdStr, ss] of Object.entries(grouped)) {
-    const ordered = [...ss].sort((a, b) => a.golpeId - b.golpeId);
+  for (const { puntoId, shots: ordered } of shotsGroupedByPoint(shots)) {
     const last = ordered[ordered.length - 1];
     if (!last || last.equipoGanadorPunto === null) continue;
     const saque = ordered.find((s) => s.tipoGolpe === "saque");
@@ -120,12 +116,11 @@ function closedPointsInOrder(shots: Shot[]): PointSummary[] {
     );
     const tbFlag = firstSaque?.extras["pt_tiebreak"];
     result.push({
-      puntoId: Number(puntoIdStr),
+      puntoId,
       server: saque.equipo,
       winner: last.equipoGanadorPunto,
       inTiebreak: tbFlag === true,
     });
   }
-  result.sort((a, b) => a.puntoId - b.puntoId);
   return result;
 }

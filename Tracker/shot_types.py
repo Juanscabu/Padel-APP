@@ -18,6 +18,7 @@ SHOT_TYPES = {
     "r": "reves",
     "v": "volea",
     "z": "bajada",
+    "l": "salida",
     "b": "bandeja",
     "s": "smash",
     "g": "globo",
@@ -30,10 +31,6 @@ SHOT_TYPES = {
     "x": "otro",
 }
 
-# "salida" se mantiene en los labels para que los partidos viejos sigan
-# mostrando "Salida de Pared" como tipo. No se puede registrar uno nuevo
-# porque ya no está en SHOT_TYPES — ahora se modela como flag con_pared
-# sobre drive/revés/globo (ver SHOT_TYPES_WITH_WALL).
 SHOT_TYPE_LABELS = {
     "drive": "Drive",
     "reves": "Revés",
@@ -71,6 +68,7 @@ SHOT_TYPES_WITH_SIDE = {
     "chiquita",
     "globo",
     "bajada",
+    "salida",
     "dejada",
     "contra_pared",
     "otro",
@@ -80,8 +78,6 @@ SHOT_TYPES_WITH_SIDE = {
 # la dirección. Si el tipo también pide lado, el orden es:
 # tipo → lado → con_pared → dirección.
 SHOT_TYPES_WITH_WALL = {
-    "drive",
-    "reves",
     "globo",
     "chiquita",
 }
@@ -105,6 +101,14 @@ DIRECTIONS = {
     "j": "reja"
 }
 
+# Direcciones específicas del saque. Se usan SOLO cuando tipo_golpe="saque".
+# Mismo patrón que SAQUE_RESULTS vs RESULTS.
+SAQUE_DIRECTIONS = {
+    "m": "medio",
+    "c": "cuerpo",
+    "p": "pared",
+}
+
 DIRECTION_LABELS = {
     "cruzado": "Cruzado",
     "paralelo": "Paralelo",
@@ -113,7 +117,16 @@ DIRECTION_LABELS = {
     "centro": "Medio",
     "cuerpo drive": "Cuerpo Drive",
     "cuerpo reves": "Cuerpo Reves",
-    "reja": "Reja"
+    "reja": "Reja",
+    # Direcciones exclusivas del saque.
+    "cuerpo": "Cuerpo",
+    "pared": "Pared",
+}
+
+SAQUE_DIRECTION_LABELS = {
+    "medio": "Medio",
+    "cuerpo": "Cuerpo",
+    "pared": "Pared",
 }
 
 RESULTS = {

@@ -48,8 +48,9 @@ Dos sets controlan los pasos intermedios opcionales:
   o revés). Pensado para golpes donde el lado no está implícito en el
   nombre: bandeja, globo, volea, etc.
 - `SHOT_TYPES_WITH_WALL` — tipos que disparan el paso "¿con pared?"
-  (S/N). Pensado para golpes que pueden venir de salida de pared:
-  drive, revés, globo.
+  (S/N). Pensado para golpes donde la pared cambia la dificultad pero
+  no el nombre del golpe: globo y chiquita. La salida de pared como
+  drive/revés se registra con su propio tipo (`salida`), no con flag.
 
 Agregar/sacar el id del set basta para cambiar el flujo — la máquina
 de estados se adapta sola y persiste como `extra.lado` y

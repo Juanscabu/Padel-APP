@@ -2,6 +2,7 @@
 // Recibe un Match y devuelve un objeto plano listo para visualizar.
 
 import { Match, PlayerId, isErrorResult, isForzado } from "../parser/types";
+import { shotsGroupedByPoint } from "./_shared";
 
 export interface OverviewStats {
   totalPuntos: number;
@@ -73,17 +74,12 @@ export function computeOverview(match: Match): OverviewStats {
 // nadie — preferimos perder la atribución antes que inventarla.
 function computeErroresGenerados(match: Match): Record<PlayerId, number> {
   const counts: Record<PlayerId, number> = { J1: 0, J2: 0, J3: 0, J4: 0 };
-  const porPunto: Record<number, Match["shots"]> = {};
-  for (const s of match.shots) {
-    (porPunto[s.puntoId] ??= []).push(s);
-  }
-  for (const shots of Object.values(porPunto)) {
-    const ordered = [...shots].sort((a, b) => a.golpeId - b.golpeId);
-    for (let i = 0; i < ordered.length; i++) {
-      const err = ordered[i];
+  for (const { shots } of shotsGroupedByPoint(match.shots)) {
+    for (let i = 0; i < shots.length; i++) {
+      const err = shots[i];
       if (!isForzado(err.resultado)) continue;
       for (let j = i - 1; j >= 0; j--) {
-        const prev = ordered[j];
+        const prev = shots[j];
         if (prev.equipo !== err.equipo) {
           counts[prev.jugador] += 1;
           break;
