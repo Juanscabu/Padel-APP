@@ -11,6 +11,9 @@ export interface FlowPoint {
   game: number;
   A: number;
   B: number;
+  // Index signature para que FlowPoint sea asignable a
+  // Record<string, number> (lo que MultiLineChart pide en `data`).
+  [key: string]: number;
 }
 
 interface PuntoData {
